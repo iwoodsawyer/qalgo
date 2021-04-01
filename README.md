@@ -1,3 +1,3 @@
-# QCF quantum computing functions for Matlab/Octave
+# QCF quantum computing functions for Matlab
 
-Run examples using scricpts test_algoritm_name.m
+Run examples using the matlab scripts test_algoritm_name.m

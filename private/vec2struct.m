@@ -1,14 +1,15 @@
 function s = vec2struct(phi)
 
 n=log2(size(phi,1));
-cf_assert(n==floor(n));
+assert(n==floor(n));
 
-in=find(phi~=0); %nonzero
+in=find(abs(phi) > sqrt(eps)); %nonzero
 
-for i=1:length(in)
-
-    dec = in(i)-1;
-    s(i).bin = dec2bin(dec,n);
+l = length(in);
+s(l).bin='';
+s(l).alpha=1;
+for i=1:l
+    s(i).bin = dec2bin(in(i)-1, n);
     s(i).alpha = phi(in(i));
-    
 end
+

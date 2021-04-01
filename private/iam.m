@@ -1,10 +1,6 @@
-function IA = ia(n)
-%IA = ia(n)
-%
-%Inversion about average.
+function D = iam(n)
+%IAM Inversion about the average for N bits
+%   D=IAM(N)
 
-%TODO: normalise correctly
-
-IA =2*ones(2^n)/(2^n);
-
-IA =IA-eye(2^n);
+l = 2^n;
+D = (2/l).*ones(l) - eye(l);

@@ -1,25 +1,28 @@
-function deutsch_jozsa(f)
-%deutsch_jozsa(f)
-%
-%This fuction should be called with the name of a constant or balanced
-%function f.
-%eg: deutsch_jozsa('dj_b0')
-%
-%The functions dj_b0, dj_b1, dj_c0, dj_c1 are provided in QCF as examples.
+function [const,bal] = deutsch_jozsa(f,m,n) 
+%DEUTSCH_JOZSA Deutsch-Jozsa algorithm
+%  [CONST,BAL] = DEUTCH_JOZSA(F,M,N) determines if the function F is
+%  constant or balanced, where F must be of the form F(X,N) where X is a
+%  M-bits integer, and M and N is numbers of input and output bits.
 
-psi = bin2vec('000001');
+if nargin < 3
+    n = 1;
+end
+if nargin < 2
+    m = 1;
+end
 
-U_f = uf(f, 5, 1);
+psi = kron(dec2vec(0,m),dec2vec(1,n));
+Uf  = ufm(f, m, n);
+Hm  = hadamard(m);
+Hn  = hadamard(n);
+In  = identity(n);
+%psi = (kron(Hm,In)*(Uf*(kron(Hm,Hn)*psi)));
+psi = Uf*kronmult({Hm,Hn},psi);
+psi = kronmult({Hm,In},psi);
+[psi,dec] = measure_subspace(psi, 1:m);
+const = ~dec;
+bal = (dec==1);
 
-H_6 = hadamard(6);
-H_5 = hadamard(5);
-I   = identity(1);
-
-psi = (kron(H_5, I))*U_f*H_6*psi;
-
-psi = measure(psi);
-
-pretty(psi)
 
 
 

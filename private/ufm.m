@@ -1,33 +1,25 @@
-function U_f = uf(f,m,n)
-%U_f = uf(f,m,n)
-%
-% make u_f from f
-%
-% m is #bits in input
-% n is #bits in output
-% f must be of form:  y=f(x,n), with x:inf, n:int
+function Uf = ufm(f,m,n)
+%UFM Make unitary UF matrix from function F
+%   UF = UFM(F,M,N) makes unitary UF from function F, where F must be of
+%   the form F(X,N) where X is a M-bits integer, and M and N is the numbers
+%   of input and output bits.
 
 % i is integer version of string x
 % j is integer version of string b
 % f:i -> R^n
 
-ins=[];
-outs=[];
+k = 2^m;
+l = 2^n;
+s = k*l;
+ins=zeros(s,1);
+outs=zeros(s,1);
 
-for i=0:2^m-1
-    
-    x=dec2bin(i,m);
-
-    for j=0:2^n-1
-        b=dec2bin(j,n);
-        
-        in = [x b];
-        
-        out=[x dec2bin( bitxor(j, feval(f,i,n)) ,n) ];
-        
-        ins=[ins;in];
-        outs=[outs;out];
-    end
+for i=0:k-1
+    fi = feval(f,i,n);
+    ins(i*l+(1:l))  = bitshift(i,n) + (0:l-1) + 1;
+    outs(i*l+(1:l)) = bitshift(i,n) + bitxor((0:l-1), fi) + 1;
 end
 
-U_f = build_u(ins, outs);
+Uf = full(sparse(ins,outs,ones(s,1),s,s));
+
+

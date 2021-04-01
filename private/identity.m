@@ -1,6 +1,5 @@
 function I = identity(n)
-%I = identity(n)
-%
-%nbit identity matrix.
+%IDENTITY Create identity matrix
+%   I=IDENTITY(N) Create N-bit identity matrix.
 
-I = eye(2^n);
+I = speye(2^n);

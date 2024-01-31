@@ -37,7 +37,6 @@ while (~found && k<(N-2))
     Uf  = ufam(f, m, n);
     psi = Uf*kronfftmult({Qm,In},psi);
     %psi = Uf(kron(Hm,In)*psi); 
-    psi = kronifftmult({Qm,In},psi);
     %psi = kron(Qm,In)*psi;
     %[psi,x] = measure_subspace(psi, 1:m);
     [psi,~,bin] = measure(psi);

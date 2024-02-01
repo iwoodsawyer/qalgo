@@ -1,4 +1,4 @@
-function Uctlm = uctlm(U, k, n, nb)
+function [Im,Upow] = uctlm_mult(U, k, n, nb)
 %UCTLM Return the matrix representation of the Clt-U^(2^(k-1)) gate.
 
 I = identity(1);
@@ -7,25 +7,27 @@ I00(2,2) = 0;
 I11 = I;
 I11(1,1) = 0;
 
-Im = identity(nb);
+Im = cell(n+1,1);
+Im{1} = identity(nb);
 for j = n:-1:1
     if j == k
-        Im = kron(Im,I00);
+        Im{n-j+2} = I00;
     else
-        Im = kron(Im,I);
+        Im{n-j+2} = I;
     end
 end
 
-Upow = U^(2^(k-1));
+Upow = cell(n+1,1);
+Upow{1} = U^(2^(k-1));
 for j = n:-1:1
     if j == k
-        Upow = kron(Upow,I11);
+        Upow{n-j+2} = I11;
     else
-        Upow = kron(Upow,I);
+        Upow{n-j+2} = I;
     end
 end
 
-Uctlm = Im + Upow;
+
 
 
 

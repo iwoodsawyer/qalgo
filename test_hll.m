@@ -13,5 +13,5 @@ U = V*diag(exp(d.*t.*1i))/V; % = expm(A.*t.*1i);
 v = d/min(d); % scale such that 1/v <= 1
 
 % Find the expected ratio of measurement
-x = hll3(U,b,v)
+x = hll(U,b,v)
 

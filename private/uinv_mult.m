@@ -1,4 +1,4 @@
-function Uinv = uinv(d, k, n)
+function [Im,Uinv] = uinv_mult(d, k, n)
 %UINV Return the matrix representation of the Clt-Ry gate.
 
 theta = 2*asin(1/d(k));
@@ -10,22 +10,24 @@ I00(2,2) = 0;
 I11 = I;
 I11(1,1) = 0;
 
-Im = I;
+Im = cell(n+1,1);
+Im{n+1} = I;
 for j = 1:n
     if j == k
-        Im = kron(I00,Im);
+        Im{n-j+1} = I00;
     else
-        Im = kron(I,Im);
+        Im{n-j+1} = I;
     end
 end
 
-Uinv = Ry;
+Uinv = cell(n+1,1);
+Uinv{n+1} = Ry;
 for j = 1:n
     if j == k
-        Uinv = kron(I11,Uinv);
+        Uinv{n-j+1} = I11;
     else
-        Uinv = kron(I,Uinv);
+        Uinv{n-j+1} = I;
     end
 end
 
-Uinv = Im + Uinv;
+

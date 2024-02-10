@@ -1,48 +1,60 @@
 function [lambda,phi] = pe_itr(A,psi,d)
 %PE_ITR Iterative Phase Estimation algorithm
 %[LAMBDA,PHI] = PE_ITR(A,PSI,D) determines the eigenvalue of A and initial
-%  phase PSI, where A must be N by N-bits and PSI must be 1 x N-bits.
-%  D is the number of digits accuracy of this algorithm.
+%  phase PSI, where A must be N-by-N and PSI must be 1-x-N.
+%  D is number of digits accuracy.
+%  LAMBDA is the measured eigenvalue, and PHI is the measured top register.
 
-[m,n] = size(A);
-if m~=n
-   error('A must be square'); 
-end
+% input checks
+assert(abs(sum(norm(A*A'))-1)<sqrt(eps), 'A is not unitary');
+nb = log2(size(psi,1));
+assert(nb==floor(nb));
 if nargin < 3
-    d = n;
+    d = size(A,1);
 end
+assert(d>0,'D is not > 0');
 if nargin < 2
-    psi = zeros(n,1);
-    psi(end) = 1;
+    psi = dec2vec(1,nb);
 end
+assert(abs(sum(norm(psi))-1)<sqrt(eps), 'PSI is not normalised');
 
-% calculate the number of qubits for top register
 n = 1;
+I = identity(1);
+Ib = identity(nb);
+H = hadamard(n);
 
 lambda = 0;
-for k = d:-1:1
+num_meas = 1000;
+for k = d:-1:1   
+    % inital state
+    phi = kron(kron(psi,dec2vec(0,n)),dec2vec(0,1)); % c q a
+    
     % apply hadamard
-    phi = dec2vec(0,n);
+    phi = kron(kron(Ib,H),I)*phi;
     
-    H = hadamard(n);
-    phi = H*phi;
-     
-    % apply control U^(2^(k-1))
-    Uctl = uctl1(A, psi, k);
-    phi = Uctl*phi;
-     
+    % apply control gate
+    Uctl = uctl1(A, k, nb);
+    phi = kron(Uctl,I)*phi + phi;
+    
     % apply rotation
-    Z = rotz(-lambda*(2^(k-1)),n);
-    phi = Z*phi;
+    Urot = urot(-lambda*(2^(k-1)), 1, n);
+    phi = kron(Ib,Urot)*phi + phi;
     
-    % apply inversed Quantum Fourier Transform
-    phi = H*phi;
+    % apply hadamard
+    phi = kron(kron(Ib,H),I)*phi;
     
-    [phi,theta] = measure(phi);
+    % measurements
+    Theta = zeros(num_meas,1);
+    for j = 1:num_meas     
+        [~,theta] = measure_subspace(phi,nb+1:nb+n);
+        Theta(j) = round(theta);
+    end
     
+    % select frequent measurement
+    theta = mode(Theta);
     lambda = lambda + theta/(2^k);
 end
 
-lambda = exp(2*pi*1i*lambda);
-
+% convert
+lambda = exp(2*pi*lambda*1i);
 end

@@ -11,7 +11,7 @@ function [phi,dec,bin] = measure(psi)
 b = log2(size(psi,1));
 assert(b==floor(b));
 
-p = (abs(psi)).^2;
+p = norm(psi); 
 assert(abs(sum(p)-1)<sqrt(eps), 'Psi not normalised.');
 
 %simulate the collapse

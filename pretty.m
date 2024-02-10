@@ -14,7 +14,13 @@ end
 str=[];
 
 for i=1:length(struct)
-    
+    if (abs(real(struct(i).alpha)) < sqrt(eps))
+        struct(i).alpha = imag(struct(i).alpha)*1i;
+    end
+    if (abs(imag(struct(i).alpha)) < sqrt(eps))
+        struct(i).alpha = real(struct(i).alpha);
+    end
+
     if ~b_dec
         str=[ str ' ' num2str(struct(i).alpha) '|' struct(i).bin '> +'];
     else

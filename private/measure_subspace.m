@@ -1,4 +1,4 @@
-function [phi,dec,bin] = measure_subspace(psi, bits)
+function [phi,dec,bin,pi] = measure_subspace(psi, bits)
 %MEASURE_SUBSPACE Measurement on a subspace of qubits of register psi.
 %   PHI=MEASURE_SUBSPACE(PSI,BITS) specify which bits to measure with a N
 %   indices, where N is number of qubits in to be measured. For example,

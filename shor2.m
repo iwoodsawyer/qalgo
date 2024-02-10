@@ -27,17 +27,34 @@ while (~found && k<(N-2))
     % modulo operation
     f = @(x,y) mod((y*a^x),N);
     
-    % quantum operation
+    % initialize state vector
     psi = kron(dec2vec(0,m),dec2vec(0,n));
-    %Qm  = qft(m);
-    Qm = sparse(2^m,2^m);
     
-    In  = identity(n);
-    %Uf  = ufm(f, m, n);
+    % apply inverse QFT
+    %Qm  = qft(m);
+    %In  = identity(n);
+    %psi = kron(Qm',In)*psi); 
+    %psi = kronfftmult({Qm',In},psi);
+    t = 2^n;
+    l = 2^m;
+    w = t*l;
+    for j = 1:t
+        psi(j:t:w) = fft(psi(j:t:w))./sqrt(l);
+    end
+    
+    % apply operator
+    %Uf = ufm(f, m, n);
     Uf  = ufam(f, m, n);
-    psi = Uf*kronfftmult({Qm,In},psi);
-    %psi = Uf(kron(Hm,In)*psi); 
-    %psi = kron(Qm,In)*psi;
+    psi = Uf*psi;
+    
+    % apply QFT
+    %psi = kron(Qm,In)*psi); 
+    %psi = kronfftmult({Qm,In},psi);
+    for j = 1:t
+        psi(j:t:w) = ifft(psi(j:t:w)).*sqrt(l);
+    end
+    
+    % measure
     %[psi,x] = measure_subspace(psi, 1:m);
     [psi,~,bin] = measure(psi);
     x = bin2dec(bin(1:m));

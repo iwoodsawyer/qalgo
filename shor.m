@@ -28,19 +28,30 @@ while (~found && k<(N-2))
     % modulo operation
     f = @(x,y) mod((y*a^x),N);
     
-    % quantum operation
+    % initilize state vector
     psi = kron(dec2vec(0,m),dec2vec(0,n));
+    
+    % apply hadamard
     %Hm  = hadamard_mult(m);
     Hm  = hadamard(m);
     In  = identity(n);
+    %psi = kronmult({Hm{:} In},psi);
+    psi = kronmult({Hm,In},psi); 
+    
+    % apply operator
     %Uf  = ufm(f, m, n);
     Uf  = ufam(f, m, n);
-    %psi = Uf*kronmult({Hm{:} In},psi);
-    psi = Uf*kronmult({Hm,In},psi); 
+    psi = Uf*psi; 
+    
+    % measure
     psi = measure_subspace(psi, m+1:m+n);
+    
+    % apply QFT
     Qm  = qft(m);
     psi = kronmult({Qm,In},psi);
     %psi = kron(Qm,In)*psi;
+    
+    % measure
     [psi,x] = measure_subspace(psi, 1:m);
     
     % determine period

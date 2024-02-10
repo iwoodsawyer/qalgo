@@ -1,12 +1,11 @@
-function [Uctl,psi] = uctl1(U, psi, k)
-%UCTL Return the matrix representation of the Clt-U^(2^(k-1)) gate.
+function Uctl = uctl1(U, k, nb)
+%UCTL1 Return the matrix representation of the Clt-U^(2^(k-1)) gate.
 
-psi_u = U^(2^(k-1)) * psi;
+I = identity(1);
+I11 = I;
+I11(1,1) = 0;
+Im = identity(nb);
+Uctl = U^(2^(k-1)) - Im;
+Uctl = kron(Uctl,I11);
 
-for j = 1:size(psi, 1)
-    if psi(j) ~= 0
-        phase = psi_u(j) / psi(j);
-    end
-end
 
-Uctl = [1 0; 0 phase];

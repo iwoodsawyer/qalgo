@@ -1,26 +1,35 @@
 function [lambda,phi,a] = pe(A,psi,d,p)
 %PE Phase Estimation algorithm
 %[LAMBDA,PHI,A] = PE(A,PSI,D,P) determines the eigenvalue of A and initial
-%  phase PSI, where A must be N-by-N and PSI must be 1-x-N.
+%  phase PSI, where A must be N-by-N and PSI must be N-x-1.
 %  D is number of digits accuracy, and P is the probability of failure.
 %  LAMBDA is the measured eigenvalue, and PHI is the measured top register.
 %  A is the ancilla bit for the correctness of measurement.
 
 % input checks
+nl = log2(size(A,1));
+nm = log2(size(A,2));
+assert(nl==floor(nl));
+assert(nl==nm, 'A is not square');
 assert(abs(sum(norm(A*A'))-1)<sqrt(eps), 'A is not unitary');
-nb = log2(size(psi,1));
-assert(nb==floor(nb));
+
 if nargin < 4
     p = 1;
 end
 assert(p<=1,'P is not <= 1');
+
 if nargin < 3
     d = size(A,1);
 end
 assert(d>0,'D is not > 0');
+
 if nargin < 2
-    psi = dec2vec(1,nb);
+    psi = dec2vec(1,nl);
 end
+assert(iscolumn(psi),'PSI is not column vector');
+nb = log2(size(psi,1));
+assert(nb==floor(nb));
+assert(nl==nb);
 assert(abs(sum(norm(psi))-1)<sqrt(eps), 'PSI is not normalised');
 
 % add qubits to reduce the probability of failure for top register
